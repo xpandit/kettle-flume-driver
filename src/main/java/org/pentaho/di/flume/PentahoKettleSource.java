@@ -62,13 +62,13 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
 
     private static final String OUTPUT_BODY_FIELD_NAME = "eventBody";
 
-    private static final String SOURCE_TRANS_PATH = "sourceTransPath";
+    public static final String SOURCE_TRANS_PATH = "sourceTransPath";
 
-    private static final String SOURCE_OUTPUT_NAME = "sourceOutputName";
+    public static final String SOURCE_OUTPUT_NAME = "sourceOutputName";
 
-    private static final String SOURCE_EXECUTION_TYPE = "sourceExecutionType";
+    public static final String SOURCE_EXECUTION_TYPE = "sourceExecutionType";
 
-    private static final String SOURCE_LOG_LEVEL = "sourceLogLevel";
+    public static final String SOURCE_LOG_LEVEL = "sourceLogLevel";
 
     private static final String DEFAULT_SOURCE_LOG_LEVEL = "BASIC";
 
@@ -163,6 +163,8 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
                 singleThreadedTransExecutor = new SingleThreadedTransExecutor(sourceTrans);
                 singleThreadedTransExecutor.init();
             }
+            
+            super.start();
         } catch (KettleException e) {
             e.printStackTrace();
         }
@@ -181,6 +183,7 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
             e.printStackTrace();
         }
 
+        super.stop();
         logger.info("Total events processed: " + eventCount);
     }
 }

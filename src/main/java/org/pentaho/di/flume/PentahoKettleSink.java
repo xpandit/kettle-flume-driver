@@ -62,13 +62,13 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
 
     private static final String INJECTOR_BODY_FIELD_NAME = "eventBody";
 
-    private static final String SINK_TRANS_PATH = "sinkTransPath";
+    public static final String SINK_TRANS_PATH = "sinkTransPath";
 
-    private static final String SINK_INJECTOR_NAME = "sinkInjectorName";
+    public static final String SINK_INJECTOR_NAME = "sinkInjectorName";
 
-    private static final String SINK_EXECUTION_TYPE = "sinkExecutionType";
+    public static final String SINK_EXECUTION_TYPE = "sinkExecutionType";
 
-    private static final String SINK_LOG_LEVEL = "sinkLogLevel";
+    public static final String SINK_LOG_LEVEL = "sinkLogLevel";
 
     private static final String DEFAULT_SINK_LOG_LEVEL = "BASIC";
 
@@ -134,6 +134,7 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
                 singleThreadedTransExecutor.init();
             }
             
+            super.start();
             logger.debug("Loaded sink transformation from: " + this.sinkTransPath);
         } catch (KettleException e) {
             e.printStackTrace();
@@ -155,6 +156,7 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
             e.printStackTrace();
         }
 
+        super.stop();
         logger.info("Total events processed: " + eventCount);
     }
 
