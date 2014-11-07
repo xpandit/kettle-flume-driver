@@ -22,17 +22,17 @@
 
 package org.pentaho.di.flume;
 
-import com.google.common.base.Preconditions;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.flume.*;
+import org.apache.flume.Channel;
+import org.apache.flume.Context;
+import org.apache.flume.Event;
+import org.apache.flume.EventDeliveryException;
+import org.apache.flume.Transaction;
 import org.apache.flume.conf.Configurable;
 import org.apache.flume.sink.AbstractSink;
-import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.RowProducer;
@@ -40,6 +40,8 @@ import org.pentaho.di.trans.SingleThreadedTransExecutor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
+
+import com.google.common.base.Preconditions;
 
 
 /**
@@ -56,7 +58,7 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
     private static final Logger logger = Logger.getLogger(PentahoKettleSink.class);
 
     // Constants for the operation
-    private static final String INJECTOR_HEADERS_FIELD_NAME = "eventHeaders";
+    private static final String INJECTOR_HEADERS_FIELD_NAME = "eventHeader";
 
     private static final String INJECTOR_BODY_FIELD_NAME = "eventBody";
 
@@ -116,8 +118,6 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
             sinkTrans.prepareExecution(null);
             sinkTrans.setLogLevel(LogLevel.valueOf(this.sinkLogLevel));
 
-            logger.debug("Loaded sink transformation from: " + this.sinkTransPath);
-
             // Find the injector step and set it to consume rows from the row producer
             StepInterface injector = sinkTrans.findRunThread(this.sinkInjectorName);
 
@@ -133,6 +133,8 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
                 singleThreadedTransExecutor = new SingleThreadedTransExecutor(sinkTrans);
                 singleThreadedTransExecutor.init();
             }
+            
+            logger.debug("Loaded sink transformation from: " + this.sinkTransPath);
         } catch (KettleException e) {
             e.printStackTrace();
         }
@@ -177,7 +179,7 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
         Channel ch = getChannel();
         Transaction txn = ch.getTransaction();
         txn.begin();
-
+        
         try {
             Event event = ch.take();
 
@@ -191,7 +193,7 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
                 Object[] row = new Object[injectorRowMeta.getFieldNames().length];
                 row[injectorRowMeta.indexOfValue(INJECTOR_HEADERS_FIELD_NAME)] = eventHeaders;
                 row[injectorRowMeta.indexOfValue(INJECTOR_BODY_FIELD_NAME)] = eventBody;
-
+           
                 // Inject the row
                 sinkRowProducer.putRow(injectorRowMeta, row);
 
@@ -200,7 +202,7 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
                 }
 
                 eventCount++;
-
+                
                 status = Status.READY;
             } else {
                 // poll or erroneous event
@@ -210,10 +212,12 @@ public class PentahoKettleSink extends AbstractSink implements Configurable {
             txn.commit();
         } catch (Throwable t) {
             txn.rollback();
-
+            
             // Log exception, handle individual exceptions as needed
             status = Status.BACKOFF;
 
+            logger.debug("Unexpected error while consuming event.", t);
+            
             // re-throw all Errors
             if (t instanceof Error) {
                 throw (Error) t;
