@@ -29,7 +29,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogWriter;
 
 /**
- * Utility enum for singleton initialisation of the Pentaho Data Integration environment
+ * Utility enum for singleton initialization of the Pentaho Data Integration environment
  * <p/>
  * Created Date: 02/12/2013
  * Created By: André Simões (andre.simoes@xpand-it.com)

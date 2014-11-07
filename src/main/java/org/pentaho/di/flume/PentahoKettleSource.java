@@ -1,28 +1,29 @@
-/*! ******************************************************************************
- *
+/*
+ * ! ******************************************************************************
+ * 
  * Kettle Flume Driver
- *
+ * 
  * Copyright (C) 2003-2013 by Xpand IT : http://www.xpand-it.com
- *
- *******************************************************************************
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with
+ * 
+ * ******************************************************************************
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- ******************************************************************************/
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on
+ * an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations under the License.
+ * 
+ * ****************************************************************************
+ */
 
 package org.pentaho.di.flume;
 
-import com.google.common.base.Preconditions;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.flume.Context;
 import org.apache.flume.Event;
@@ -44,14 +45,12 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepInterface;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.base.Preconditions;
 
 /**
  * This Flume source uses a kettle transformation to generate the events which then forward to the channel.
  * <p/>
- * Created Date: 02/12/2013
- * Created By: André Simões (andre.simoes@xpand-it.com)
+ * Created Date: 02/12/2013 Created By: André Simões (andre.simoes@xpand-it.com)
  */
 public class PentahoKettleSource extends AbstractSource implements EventDrivenSource, Configurable {
 
@@ -63,13 +62,13 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
 
     private static final String OUTPUT_BODY_FIELD_NAME = "eventBody";
 
-    private static final String SOURCE_TRANS_PATH = "sourceTransPath";
+    public static final String SOURCE_TRANS_PATH = "sourceTransPath";
 
-    private static final String SOURCE_OUTPUT_NAME = "sourceOutputName";
+    public static final String SOURCE_OUTPUT_NAME = "sourceOutputName";
 
-    private static final String SOURCE_EXECUTION_TYPE = "sourceExecutionType";
+    public static final String SOURCE_EXECUTION_TYPE = "sourceExecutionType";
 
-    private static final String SOURCE_LOG_LEVEL = "sourceLogLevel";
+    public static final String SOURCE_LOG_LEVEL = "sourceLogLevel";
 
     private static final String DEFAULT_SOURCE_LOG_LEVEL = "BASIC";
 
@@ -107,7 +106,8 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
 
         this.sourceExecutionType = TransExecutionType.getExecutionType(context.getString(SOURCE_EXECUTION_TYPE));
 
-        this.sourceLogLevel = (String) ObjectUtils.defaultIfNull(context.getString(SOURCE_LOG_LEVEL), DEFAULT_SOURCE_LOG_LEVEL);
+        this.sourceLogLevel = (String) ObjectUtils.defaultIfNull(context.getString(SOURCE_LOG_LEVEL),
+                DEFAULT_SOURCE_LOG_LEVEL);
     }
 
     @Override
@@ -163,6 +163,8 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
                 singleThreadedTransExecutor = new SingleThreadedTransExecutor(sourceTrans);
                 singleThreadedTransExecutor.init();
             }
+            
+            super.start();
         } catch (KettleException e) {
             e.printStackTrace();
         }
@@ -181,6 +183,7 @@ public class PentahoKettleSource extends AbstractSource implements EventDrivenSo
             e.printStackTrace();
         }
 
+        super.stop();
         logger.info("Total events processed: " + eventCount);
     }
 }

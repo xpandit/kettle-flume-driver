@@ -12,6 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <pentaho.kettle.version>5.2.0.2-84</pentaho.kettle.version>
+        <cloudera.flume.version>1.5.0-cdh5.2.0</cloudera.flume.version>
     </properties>
 
     <build>
@@ -34,6 +36,15 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
         </plugins>
     </build>
 
@@ -42,34 +53,34 @@
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
-            <version>4.4.2-GA</version>
+            <version>${pentaho.kettle.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-engine</artifactId>
-            <version>4.4.2-GA</version>
+            <version>${pentaho.kettle.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>pentaho-kettle</groupId>
-            <artifactId>kettle-db</artifactId>
-            <version>4.4.2-GA</version>
+            <artifactId>kettle5-log4j-plugin</artifactId>
+            <version>${pentaho.kettle.version}</version>
             <scope>provided</scope>
         </dependency>
-
+        
         <!-- Cloudera deps -->
         <dependency>
             <groupId>org.apache.flume</groupId>
             <artifactId>flume-ng-core</artifactId>
-            <version>1.2.0-cdh4.1.1</version>
+            <version>${cloudera.flume.version}</version>
             <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>3.8.1</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -77,7 +88,7 @@
     <repositories>
         <repository>
             <id>pentaho</id>
-            <url>http://repository.pentaho.org/artifactory/pentaho</url>
+            <url>http://nexus.pentaho.org/content/groups/omni/</url>
         </repository>
         <repository>
             <id>cloudera</id>
